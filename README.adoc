@@ -10,10 +10,46 @@ This opeator uses the role https://github.com/kameshsampath/ansible-role-kuberne
 
 [source,bash,attributes]
 ----
-
+kubectl create ns demos
+kubectl apply -n demos -f https://raw.githubusercontent.com/kameshsampath/app-spice-operator/master/deploy/service_account.yaml
+kubectl apply -n demos -f https://raw.githubusercontent.com/kameshsampath/app-spice-operator/master/deploy/role_binding.yaml #<1>
+kubetl apply -n demos -f https://raw.githubusercontent.com/kameshsampath/app-spice-operator/master/deploy/operator.yaml
 ----
 
+<1> Make sure to update the subjects namespace to `demos`
+
+Wait for the *app-spice-operator* to be up and running:
+
+[source,bash]
+----
+watch kubectl get pods -n demos
+----
 
 == Example CRs(recipes)
 
+Based on the recipes you need you can deploy one from crds folder:
 
+=== Knative 
+
+[source,bash]
+----
+kubectl apply -n demos -f https://raw.githubusercontent.com/kameshsampath/app-spice-operator/master/deploy/crds/knative_recipe_cr.yaml
+----
+
+The command above should deploy Knative Serving and Eventing components in `knative-serving` and `knative-eventing` namespaces.
+
+=== Tetkoncd 
+
+[source,bash]
+----
+kubectl apply -n demos -f https://raw.githubusercontent.com/kameshsampath/app-spice-operator/master/deploy/crds/tektoncd_recipe_cr.yaml
+----
+
+The command above should deploy Tektoncd Pipelines and Triggers components in `tektoncd-pipelines` namespace.
+
+=== Knative with Tektoncd
+
+[source,bash]
+----
+kubectl apply -n demos -f https://raw.githubusercontent.com/kameshsampath/app-spice-operator/master/deploy/crds/knative_pipelines_recipe.yaml
+----

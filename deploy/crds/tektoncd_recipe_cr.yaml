@@ -3,4 +3,4 @@ kind: Recipe
 metadata:
   name: tektoncd-recipe
 spec:
-  deploy_tekton: yes
+  deploy_tektoncd: yes

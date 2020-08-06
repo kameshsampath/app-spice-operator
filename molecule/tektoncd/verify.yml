@@ -1,17 +1,25 @@
 ---
-- name: Verify
+- name: Tekton Verify
   hosts: localhost
   connection: local
   gather_facts: no
-  no_log: "{{ molecule_no_log }}"
 
   collections:
     - community.kubernetes
 
   vars:
-    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/spice.kameshs.dev_v1alpha1_recipe_cr.yaml'])) | from_yaml }}"
+    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/tektoncd_recipe_cr.yaml'])) | from_yaml }}"
+    ingress_namespace: contour-system
+    test_ns: osdk-tekton-test
 
   tasks:
+
+    - name: "Create {{ test_ns }} namespace"
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: '{{ test_ns }}'
+  
     - name: Create the spice.kameshs.dev/v1alpha1.Recipe and wait for reconciliation to complete
       k8s:
         state: present
@@ -35,10 +43,4 @@
       assert:
         that: (pods | length) > 0
     
-- import_playbook: ../ingress/verify.yml
-
-- import_playbook: ../knative/verify.yml
-  when: deploy_knative
-
-- import_playbook: ../tektoncd/verify.yml
-  when: deploy_tektoncd
+- import_playbook: pipelines_verify.yml
