@@ -1,0 +1,164 @@
+---
+- name: Eventing Verify
+  hosts: localhost
+  connection: local
+  no_log: "{{ molecule_no_log }}"
+  gather_facts: no
+
+  collections:
+    - community.kubernetes
+  
+  vars:
+    knative_version: v0.16.0
+    knative_eventing_version: v0.16.0
+    knative_serving_version: v0.16.0
+    ingress_namespace: contour-system
+    kn_test_namespace: osdk-knative-test
+
+  tasks:
+  - name: Label namespace for Knative Eventing Injection
+    k8s:
+      apply: yes
+      force: yes
+      definition:
+        kind: Namespace
+        metadata:
+          name: "{{ kn_test_namespace }}"
+          labels:
+            eventing.knative.dev/injection: enabled
+      state: present
+
+  - name: Deploy default Broker
+    k8s:
+      state: present
+      definition:
+        apiVersion: eventing.knative.dev/v1
+        kind: Broker
+        metadata:
+          name: default
+          namespace: "{{ kn_test_namespace }}"
+      wait: yes
+      wait_condition:
+        type: Addressable
+        status: yes
+    register: default_broker
+
+  - name: Deploy a Knative Eventing hello-display app
+    k8s:
+      state: present
+      definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: hello-display
+          namespace: "{{ kn_test_namespace }}"
+        spec:
+          replicas: 1
+          selector:
+            matchLabels: &labels
+              app: hello-display
+          template:
+            metadata:
+              labels: *labels
+            spec:
+              containers:
+                - name: event-display
+                  image: gcr.io/knative-releases/knative.dev/eventing-contrib/cmd/event_display
+      wait: yes
+
+  - name: Deploy a Knative Eventing hello-display service
+    k8s:
+      state: present
+      definition:
+        kind: Service
+        apiVersion: v1
+        metadata:
+          name: hello-display
+          namespace: "{{ kn_test_namespace }}"
+        spec:
+          selector:
+            app: hello-display
+          ports:
+            - protocol: TCP
+              port: 80
+              targetPort: 8080
+      wait: yes
+
+  - name: Get Deployment hello-display
+    k8s_info:
+      kind: Deployment
+      name: hello-display
+      namespace: "{{ kn_test_namespace }}"
+    register: deployment_hellodisplay
+
+  - name: Verify hello-display has correct number of replicas
+    assert:
+      that: "(item.status.replicas == 1 ) and (item.status.availableReplicas == item.status.replicas) and ((item.status.readyReplicas == 1))"
+    with_items:
+    - "{{ deployment_hellodisplay.resources }}"
+
+  - name: Create Greeting Trigger
+    k8s:
+      state: present
+      definition:
+        apiVersion: eventing.knative.dev/v1
+        kind: Trigger
+        metadata:
+          name: default
+          namespace: "{{ kn_test_namespace }}"
+        spec:
+            broker: default
+            filter:
+              attributes:
+                type: greeting
+            subscriber:
+              ref:
+                apiVersion: v1
+                kind: Service
+                name: hello-display
+      wait: yes
+      wait_condition:
+        type: SubscriptionReady
+        status: yes
+
+  - name: Create Event Producer
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          labels:
+            run: curl
+          name: curl
+          namespace: "{{ kn_test_namespace }}"
+        spec:
+          containers:
+          - image: radial/busyboxplus:curl
+            imagePullPolicy: IfNotPresent
+            name: curl
+            resources: {}
+            stdin: true
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            tty: true
+      wait: yes
+
+  - name: Send Greeting event
+    k8s_exec:
+      namespace: "{{ kn_test_namespace }}"
+      pod: curl
+      command: "{{ lookup('template','send-event.j2') }}"
+    register: result
+
+  - name: Verify message sent successfully
+    assert:
+        that: "{{ result.stderr_lines is defined and  '< HTTP/1.1 202 Accepted' in result.stderr_lines }}"
+
+  - name: "Delete {{ kn_test_namespace }} namespace"
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: '{{ kn_test_namespace }}'
+      state: absent
+      wait: yes

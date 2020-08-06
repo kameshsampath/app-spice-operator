@@ -2,12 +2,12 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: myapp
-  namespace: molecule-ingress-test
+  namespace: {{ namespace }}
   labels:
     app: myapp
 spec:
   rules:
-    - host: 'myapp.molecule-ingress-test.127.0.0.1.nip.io'
+    - host: 'myapp.{{ namespace }}.{{ cluster_ip | default('127.0.0.1') }}.nip.io'
       http:
         paths:
           - backend:

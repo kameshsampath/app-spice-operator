@@ -24,7 +24,6 @@
         state: absent
         wait: yes
       with_items:
-        - role.yaml
         - role_binding.yaml
         - service_account.yaml
 

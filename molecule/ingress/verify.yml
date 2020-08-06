@@ -1,0 +1,67 @@
+---
+- name: Verify
+  hosts: localhost
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  vars:
+   ansible_python_interpreter: '{{ ansible_playbook_python }}'
+   ingress_namespace: contour-system
+
+  tasks:
+  
+  - name: Get Ingress Deployments
+    k8s_info:
+      api_version: v1
+      kind: Deployment
+      namespace: "{{ ingress_namespace }}"
+    register: ingress_deployments
+
+  - name: Ensure all Ingress Deployments are running
+    assert:
+      that: "(item.status.availableReplicas == item.status.replicas) and ((item.status.availableReplicas == item.status.readyReplicas))"
+    no_log: True
+    with_items:
+    - "{{ ingress_deployments.resources }}"
+
+  - name: Create Test namespace
+    k8s:
+      kind: Namespace
+      name: molecule-ingress-test
+      state: present
+
+  - name: Deploy Test App myApp
+    k8s:
+      state: present
+      namespace: "{{ namespace }}"
+      definition: "{{ lookup('template', '/'.join([template_dir, 'myapp','deployment.yaml.j2'])) }}"
+      wait: yes
+      wait_sleep: 5
+      wait_timeout: 180
+
+  - name: Deploy Test Service myApp
+    k8s:
+      state: present
+      namespace: "{{ namespace }}"
+      definition: "{{ lookup('template', '/'.join([template_dir, 'myapp','service.yaml.j2'])) }}"
+
+  - name: Deploy Test Ingress myApp
+    k8s:
+      state: present
+      namespace: "{{ namespace }}"
+      definition: "{{ lookup('template', '/'.join([template_dir, 'myapp','ingress.yaml.j2'])) }}"
+      wait: yes
+      wait_sleep: 5
+      wait_timeout: 180
+
+  - name: Invoke the myApp Service
+    uri:
+      url: 'http://myapp.{{ namespace }}.{{ cluster_ip | default("127.0.0.1") }}.nip.io/api/hello'
+      return_content: yes
+    register: hello_response
+
+  - name: Verify right reponse received
+    assert:
+      that: "'Hello World!' == hello_response.content"

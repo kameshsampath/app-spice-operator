@@ -23,9 +23,8 @@
 
     - name: Create RBAC resources
       k8s:
-        definition: "{{ lookup('template', '/'.join([deploy_dir, item])) }}"
+        definition: "{{ lookup('template', '/'.join([template_dir, item])) }}"
         namespace: '{{ namespace }}'
       with_items:
-        - role.yaml
-        - role_binding.yaml
-        - service_account.yaml
+        - role_binding.yaml.j2
+        - service_account.yaml.j2

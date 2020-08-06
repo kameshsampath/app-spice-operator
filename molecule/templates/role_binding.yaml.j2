@@ -5,6 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: app-spice-operator
+    namespace: {{ namespace }}
 roleRef:
   kind: ClusterRole
   name: cluster-admin

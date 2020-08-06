@@ -1,7 +1,7 @@
 kind: Deployment
 metadata:
   name: myapp
-  namespace: molecule-ingress-test
+  namespace: {{ namespace }}
 spec:
   selector:
     matchLabels:
