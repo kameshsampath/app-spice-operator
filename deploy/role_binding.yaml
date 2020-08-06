@@ -1,0 +1,11 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: app-spice-operator
+subjects:
+  - kind: ServiceAccount
+    name: app-spice-operator
+roleRef:
+  kind: Role
+  name: app-spice-operator
+  apiGroup: rbac.authorization.k8s.io

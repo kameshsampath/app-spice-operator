@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: localhost
+  connection: local
+  vars:
+    deploy_ingress: False
+    deploy_knative: False
+    deploy_tektoncd: False
+  roles:
+    - kameshsampath.k8s_app_spices

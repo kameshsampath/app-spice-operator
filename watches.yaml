@@ -1,0 +1,5 @@
+---
+- version: v1alpha1
+  group: spice.kameshs.dev
+  kind: Recipe
+  role: kameshsampath.k8s_app_spices

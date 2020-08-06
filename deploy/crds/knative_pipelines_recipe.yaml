@@ -1,0 +1,7 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: Recipe
+metadata:
+  name: knative-pipelines-recipe
+spec:
+  deploy_knative: yes
+  deploy_tektoncd: yes

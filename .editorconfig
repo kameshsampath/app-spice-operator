@@ -1,0 +1,13 @@
+root = true
+
+[Makefile]
+indent_style = tab
+
+[*{.yaml,.yml,.json}]
+indent_style = space
+charset = utf-8
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[*]
+indent_size = 2

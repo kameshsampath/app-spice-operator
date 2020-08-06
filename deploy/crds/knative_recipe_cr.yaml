@@ -1,0 +1,6 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: Recipe
+metadata:
+  name: knative-recipe
+spec:
+  deploy_knative: yes

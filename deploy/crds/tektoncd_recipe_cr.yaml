@@ -1,0 +1,6 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: Recipe
+metadata:
+  name: tektoncd-recipe
+spec:
+  deploy_tekton: yes

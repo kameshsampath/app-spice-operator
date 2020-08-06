@@ -1,0 +1,19 @@
+= Application Spice Operator
+
+This Ansible based operator helps in spicing the Kubernetes applications for some extra capabilities. The `capabilites` - are the extra components that are added to your cluster, to make to cook a new `Recipe` - e.g a serverless recipe with Knative or pipelines with Tektoncd or add an Ingress using contour
+
+== Role Dependencies
+
+This opeator uses the role https://github.com/kameshsampath/ansible-role-kubernetes-app-spices[kameshsampath.k8s_app_spices]
+
+== Installing the Operator
+
+[source,bash,attributes]
+----
+
+----
+
+
+== Example CRs(recipes)
+
+
