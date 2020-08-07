@@ -1,0 +1,7 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: OpenShiftRecipe
+metadata:
+  name: serverless-with-kafka
+spec:
+  deploy_serverless: True
+  deploy_kafka: True

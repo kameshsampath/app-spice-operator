@@ -2,6 +2,7 @@
 roles:
   - name: kameshsampath.k8s_app_spices
   - name: kameshsampath.kind
+  - name: kameshsampath.openshift_app_spices
 
 collections:
   - name: community.kubernetes

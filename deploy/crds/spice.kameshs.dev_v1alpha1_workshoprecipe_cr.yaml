@@ -1,0 +1,7 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: WorkshopRecipe
+metadata:
+  name: example-workshoprecipe
+spec:
+  # Add fields here
+  size: 3

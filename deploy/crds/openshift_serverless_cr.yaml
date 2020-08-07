@@ -1,0 +1,6 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: OpenShiftRecipe
+metadata:
+  name: serverless-openshiftrecipe
+spec:
+  deploy_serverless: True

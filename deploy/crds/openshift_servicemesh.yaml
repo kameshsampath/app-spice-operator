@@ -1,0 +1,6 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: OpenShiftRecipe
+metadata:
+  name: servicemesh-openshiftrecipe
+spec:
+  deploy_servicemesh: True

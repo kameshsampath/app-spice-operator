@@ -3,3 +3,13 @@
   group: spice.kameshs.dev
   kind: Recipe
   role: kameshsampath.k8s_app_spices
+
+- version: v1alpha1
+  group: spice.kameshs.dev
+  kind: OpenShiftRecipe
+  role: kameshsampath.openshift_app_spices
+
+- version: v1alpha1
+  group: spice.kameshs.dev
+  kind: WorkshopRecipe
+  role: kameshsampath.openshift_app_spices

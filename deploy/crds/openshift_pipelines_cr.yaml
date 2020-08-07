@@ -1,0 +1,6 @@
+apiVersion: spice.kameshs.dev/v1alpha1
+kind: OpenShiftRecipe
+metadata:
+  name: tektoncd-openshiftrecipe
+spec:
+  deploy_tektoncd: True
