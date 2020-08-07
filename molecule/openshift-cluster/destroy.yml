@@ -29,6 +29,9 @@
 
     - name: Delete Custom Resource Definition
       k8s:
-        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/spice.kameshs.dev_recipes_crd.yaml'])) }}"
+        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds',item])) }}"
         state: absent
         wait: yes
+      with_items:
+        - spice.kameshs.dev_openshiftrecipes_crd.yaml
+        - spice.kameshs.dev_workshoprecipes_crd.yaml

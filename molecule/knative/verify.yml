@@ -8,22 +8,16 @@
     - community.kubernetes
 
   vars:
-    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/knative_recipe_cr.yaml'])) | from_yaml }}"
-    knative_version: v0.16.0
-    knative_eventing_version: v0.16.0
-    knative_serving_version: v0.16.0
-    ingress_namespace: contour-system
     kn_test_namespace: osdk-knative-test
 
   tasks:
-
     - name: "Create {{ kn_test_namespace }} namespace"
       k8s:
         api_version: v1
         kind: Namespace
         name: '{{ kn_test_namespace }}'
   
-    - name: Create the spice.kameshs.dev/v1alpha1.Recipe and wait for reconciliation to complete
+    - name: Create the CustomeResource and wait for reconciliation to complete
       k8s:
         state: present
         namespace: '{{ namespace }}'

@@ -30,6 +30,8 @@ provisioner:
         operator_image: ${OPERATOR_IMAGE:-"quay.io/kameshsampath/app-spice-operator"}
         operator_pull_policy: ${OPERATOR_PULL_POLICY:-"Always"}
         molecule_no_log: False
+        serverless_test: True
+        tektoncd_test: False
   env:
     K8S_AUTH_KUBECONFIG: ${KUBECONFIG:-"~/openshift/gcp/auth/kubeconfig"}
 verifier:

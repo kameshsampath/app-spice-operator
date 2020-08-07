@@ -8,35 +8,13 @@
   collections:
     - community.kubernetes
 
-  vars:
-    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/spice.kameshs.dev_v1alpha1_recipe_cr.yaml'])) | from_yaml }}"
-
-  tasks:
-    - name: Create the spice.kameshs.dev/v1alpha1.Recipe and wait for reconciliation to complete
-      k8s:
-        state: present
-        namespace: '{{ namespace }}'
-        definition: '{{ custom_resource }}'
-        wait: yes
-        wait_timeout: 300
-        wait_condition:
-          type: Running
-          reason: Successful
-          status: "True"
-
-    - name: Get Pods
-      k8s_info:
-        api_version: v1
-        kind: Pod
-        namespace: '{{ namespace }}'
-      register: pods
-
-    - name: Example assertion
-      assert:
-        that: (pods | length) > 0
-    
 - import_playbook: ../knative/verify.yml
-  when: deploy_serverless
+  vars:
+    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds','openshiftrecipes','openshift_serverless_cr.yaml'])) | from_yaml }}"
+  when: serverless_test | default(False)
 
 - import_playbook: ../tektoncd/verify.yml
-  when: deploy_tektoncd
+  vars:
+    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds','openshiftrecipes','openshit_pipelines_cr.yaml'])) | from_yaml }}"
+    ingress_namespace: contour-system
+  when: tektoncd_test | default(False)

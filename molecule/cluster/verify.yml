@@ -38,7 +38,16 @@
 - import_playbook: ../ingress/verify.yml
 
 - import_playbook: ../knative/verify.yml
+  vars:
+    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/knative_recipe_cr.yaml'])) | from_yaml }}"
+    knative_version: v0.16.0
+    knative_eventing_version: v0.16.0
+    knative_serving_version: v0.16.0
+    ingress_namespace: contour-system
   when: deploy_knative
 
 - import_playbook: ../tektoncd/verify.yml
+  vars:
+    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/tektoncd_recipe_cr.yaml'])) | from_yaml }}"
+    ingress_namespace: contour-system
   when: deploy_tektoncd

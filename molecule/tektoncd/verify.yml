@@ -8,8 +8,6 @@
     - community.kubernetes
 
   vars:
-    custom_resource: "{{ lookup('template', '/'.join([deploy_dir, 'crds/tektoncd_recipe_cr.yaml'])) | from_yaml }}"
-    ingress_namespace: contour-system
     test_ns: osdk-tekton-test
 
   tasks:
